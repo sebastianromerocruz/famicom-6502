@@ -1,4 +1,0 @@
-; nes-tutorial.asm
-RESET                            = $C000
-InfiniteLoop                     = $C000
-NMI                              = $C003
