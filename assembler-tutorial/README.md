@@ -1,4 +1,4 @@
-# NES Game Development Tutorial
+# [**NES Game Development Tutorial**](nes-tutorial.asm)
 
 ### Build Steps (Mac):
 
@@ -23,3 +23,7 @@ RESET:
 InfiniteLoop:
 	JMP InfiniteLoop
 ```
+
+The result is a black screen (which is more progress on Famicom development that I've done in the last two years, so I'm pretty happy):
+
+![tutorial](assets/tutorial.png)
