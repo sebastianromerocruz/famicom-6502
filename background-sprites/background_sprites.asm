@@ -22,11 +22,11 @@ pointerBackgroundHighByte .rs 1
 RESET:
 	JSR LoadBackground				  ; JSR operation will jump to that label, then return here once it is done
 
-	LDA #%10000000					  ; Enable NMI, sprites and background on table 0...
+	LDA #%10000000					  ; Binary 128. Enable NMI, sprites and background on table 0...
 	STA $2000						  ; ...which will use that address $2000 we sent the PPU earlier
-	LDA #%00011110					  ; Enables sprites, enable backgrounds
+	LDA #%00011110					  ; Enables sprites, enable backgrounds—binary 30
 	STA $2001
-	LDA #$00						  ; No background scrolling
+	LDA #$00						  ; Disable background scrolling
 	STA $2006
 	STA $2006
 	STA $2005
@@ -61,7 +61,7 @@ LoadBackground:
 	LDA [pointerBackgroundLowByte],y  ; Load the low byte of our background data, offset by y
 	STA $2007						  ; Writing a byte to $2007 communicates one graphical tile to the PPU
 									  ; so we will need to repeatedly send data to this address until we’re done
-	INY
+	INY								  ; y++
 	CPY #$00						  ; Compare y to the value #$00 by using the CPY operation
 	BNE .BackgroundLoop
 
@@ -89,7 +89,7 @@ NMI:								  ; Game loop interrupt
 	.org $E000
 
 background:
-	.include "graphics/background.asm"
+	.include "assets/background_addresses.asm"
 
 	.org $FFFA
 	.dw NMI								; non-maskable interrupt
@@ -97,7 +97,7 @@ background:
 	.dw 0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Set up an empty bank which we will eventually add our character data to
+;; Set up an empty bank which we will load our sprite data to
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	.bank 2

@@ -2,4 +2,4 @@ all:
 	./nesasm nes-tutorial.asm
 
 run:
-	open nes-tutorial.nes -a fceux
+	open nes-tutorial.nes -a nestopia
