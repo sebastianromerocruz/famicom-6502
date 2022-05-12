@@ -6,6 +6,17 @@ This took so long, and not for the reasons you might expect.
 
 <sub>**Figure 1**: The result of this project.</sub>
 
+### Sections
+
+1. [**Creating Sprites**](#creating-sprites)
+2. [**Displaying the Sprites as a Background**](#displaying-the-sprites-as-a-background)
+    1. [**Housekeeping**](#housekeeping)
+    2. [**Our "Driver" Code**](#our-"driver"-code)
+    3. [**Loading the Background**](#loading-the-background)
+    4. [**Including Our Background Graphics**](#including-our-background-graphics)
+    5. [**Loading the Sprite Sheet**](#loading-the-sprite-sheet)
+3. [**Concluding Notes**](#concluding-notes)
+
 ### Creating Sprites
 
 Putting scan lines onto the Famicom screen is a different monster than on the Atari 2600's—chiefly because of its use of sprites. This really was where the difficulty came in: virtually all good software to generate sprites for the Famicom are for Windows ([**YY-CHR**](https://www.romhacking.net/utilities/119/) is the popular choice). I'll spare the gorey details, but I ended up settling for this neat little [**tool**](https://eonarheim.github.io/NES-Sprite-Editor/) by [**Erik Onarheim**](https://eonarheim.github.io), which is about as simple of a sprite editor as you can get. I was finally able to get my `chr` files this way.
@@ -28,7 +39,7 @@ pointerBackgroundLowByte  .rs 1
 pointerBackgroundHighByte .rs 1
 ```
 
-#### Loading the actual background
+#### Our "Driver" Code
 
 Here's one of the new blocks, and where I came across a new 6502 instruction: `JSR`. Short for "jump to subroutine, it's basically a function call to whatever argument you give it. In my case, I am telling it to jump to the `LoadBackground` subroutine, which I will talk about in the next section. Everything after that instruction though seems to basically be a bit of flag switching and housekeeping:
 
