@@ -13,3 +13,4 @@ Some Famicom 6502 assembly projects because why not at this point. So far, based
 
 1. [**Assembler Tutorial**](assembler-tutorial/)
 2. [**Background Sprites**](background-sprites/)
+3. [**Applying Color Palettes**](colour-palettes/)
