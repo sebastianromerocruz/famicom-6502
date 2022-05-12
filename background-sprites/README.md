@@ -21,6 +21,10 @@ This took so long, and not for the reasons you might expect.
 
 Putting scan lines onto the Famicom screen is a different monster than on the Atari 2600's—chiefly because of its use of sprites. This really was where the difficulty came in: virtually all good software to generate sprites for the Famicom are for Windows ([**YY-CHR**](https://www.romhacking.net/utilities/119/) is the popular choice). I'll spare the gorey details, but I ended up settling for this neat little [**tool**](https://eonarheim.github.io/NES-Sprite-Editor/) by [**Erik Onarheim**](https://eonarheim.github.io), which is about as simple of a sprite editor as you can get. I was finally able to get my `chr` files this way.
 
+![sprite](assets/sprite.png)
+
+<sub>**Figure 2**: The sprite sheet used in this project.</sub>
+
 I realise that this is likely not the best nor the easiest workflow, but I'd much rather keep the momentum going than get stuck because of software / hardware limitations. There is always time for refactoring later.
 
 ### Displaying the Sprites as a Background
