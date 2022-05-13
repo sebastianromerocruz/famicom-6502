@@ -1,10 +1,9 @@
 ; background-palettes.asm
 LoadAttributes                   = $C06E
 LoadPalettes                     = $C053
-palettes                         = $E400
+palettes                         = $E000
 PPUADDR                          = $2006
 PPUSCROLL                        = $2005
-attributes                       = $E420
 background                       = $E000
 VARLOC                           = $0000
 OAMDATA                          = $2004
