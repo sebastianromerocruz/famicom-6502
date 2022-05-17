@@ -1,6 +1,6 @@
 ; sprites.asm
-LoadAttributes                   = $C070
-LoadPalettes                     = $C055
+LoadAttributes                   = $C0B8
+LoadPalettes                     = $C09B
 OAMDMA                           = $4014
 palettes                         = $E400
 PPUADDR                          = $2006
@@ -11,9 +11,9 @@ VARLOC                           = $0000
 OAMDATA                          = $2004
 CPUADR                           = $C000
 RESET                            = $C000
-LoadBubble                       = $C08B
-InfiniteLoop                     = $C024
-NMI                              = $C099
+LoadBubble                       = $C0D6
+InfiniteLoop                     = $C068
+NMI                              = $C0E5
 OAMADDR                          = $2003
 bubbleSprite                     = $E460
 PPUDATA                          = $2007
@@ -22,4 +22,4 @@ PPUSTATUS                        = $2002
 IRQRD                            = $E000
 IRQRE                            = $FFFA
 PPUMASK                          = $2001
-LoadBackground                   = $C027
+LoadBackground                   = $C06B

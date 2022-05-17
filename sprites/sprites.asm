@@ -23,24 +23,97 @@ pointerBackgroundHighByte .rs 1
 	.org CPUADR					  	  ; Define where in the CPU’s address space it is located
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CONSTANTS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+APUDISABLE = #$40
+APUDISADDR = $4017
+DMCCHANDIS = $4010 ; disable APU DMC channel
+
+STACKINIT  = #$FF
+
+NMIENABLER = #%10000000               ; Binary 128. Enable NMI, sprites and background on table 0...
+SPRENABLER = #%00011110               ; Enables sprites, enable backgrounds—binary 30
+
+BGLOOPCNTR = #$04
+
+PALETTELOC = #$3F
+PALETTEBYT = #$20
+
+ATTRIBLOC1 = #$23
+ATTRIBLOC2 = #$C0
+ATTRIBUBYT = #$40
+
+BUBBLELOC  = $0300
+BUBBLEBYTE = #$18
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RESET
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 RESET:
+	SEI                               ; disable IRQs
+	CLD                               ; disable decimal mode
+
+    ; Disable APU frame IRQ
+	LDX APUDISABLE	
+	STX APUDISADDR
+
+    ; Set up stack
+	LDX STACKINIT
+	TXS                               ; X = #$FF
+
+	INX                               ; now X = 0
+	STX PPUCTRL                       ; disable NMI
+	STX PPUMASK                       ; disable rendering
+	STX DMCCHANDIS                    ; disable DMC IRQs
+
     ; Graphics and Sprites
 	JSR LoadBackground				  ; JSR operation will jump to that label, then return here once it is done
 	JSR LoadPalettes				  ; Same operation, but for the palettes
 	JSR LoadAttributes
     JSR LoadBubble
 
-	LDA #%10000000					  ; Binary 128. Enable NMI, sprites and background on table 0...
+	LDA NMIENABLER
 	STA PPUCTRL						  ; ...which will use that address $2000 (PPUCTRL) we sent the PPU earlier
-	LDA #%00011110					  ; Enables sprites, enable backgrounds—binary 30
-	STA PPUMASK						  ; $2001
+
+	LDA SPRENABLER					  ; 
+	STA PPUMASK						  ; $2001; Controls the rendering of sprites and backgrounds, as well as colour effects.
+
 	LDA #$00						  ; Disable background scrolling
 	STA PPUADDR						  ; Writes twice
 	STA PPUADDR
 	STA PPUSCROLL					  ; Writes twice
 	STA PPUSCROLL
+
+	BIT PPUSTATUS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Vertical Blanks and Memory Clear
+;; 
+;; We now have about 30,000 cycles to burn before the PPU stabilizes.
+;; One thing we can do with this time is put RAM in a known state.
+;; Here we fill it with $00, which matches what (say) a C compiler
+;; expects for BSS.  Conveniently, X is still 0.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+@VBlankWait1:                          ; First wait for vblank to make sure PPU is ready
+	BIT PPUSTATUS					   ; Clear the VBL flag if it was set at reset time
+	BPL VBlankWait1					   ; At this point, about 27384 cycles have passed
+
+@ClrMem:
+	LDA #$00
+	STA $0000,x
+	STA $0100,x
+	STA $0200,x
+	STA $0400,x
+	STA $0500,x
+	STA $0600,x
+	STA $0700,x
+	LDA #$FE				 		   ; $0300 - $07FF is RAM
+	STA $0300,x
+	INX
+	BNE ClrMem
+   
+@VBlankWait2:                          ; Second wait for vblank, PPU is ready after this
+	BIT PPUSTATUS
+	BPL VBlankWait2					   ; At this point, about 57165 cycles have passed
 
 InfiniteLoop:
 	JMP InfiniteLoop
@@ -49,10 +122,10 @@ InfiniteLoop:
 ;; Subroutines
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadBackground:
-    ; Loading background; 32 bytes of data
+    ; Loading background; {} bytes of data
 	LDA PPUSTATUS					  ; Resets the PPU
 
-	LDA #$20						
+	LDA PPUCTRL						
 	STA PPUADDR						  ; Port to the PPU to tell it where to store the background data
     
 	LDA #$00						  ; Because the memory addresses are 2 bytes and we can only send 1 byte at a time
@@ -64,7 +137,6 @@ LoadBackground:
 	STA pointerBackgroundHighByte	  ; and store it
 
     ; The loop itself
-
 	LDX #$00						  ; x = 0x0
 	LDY #$00						  ; y = 0x0
 .BackgroundLoop:					  ; . denotes a local method
@@ -75,11 +147,11 @@ LoadBackground:
 	CPY #$00						  ; Compare y to the value #$00 by using the CPY operation
 	BNE .BackgroundLoop
 
-    ; Secondary loop. We do this because we have too much data to send with a single register
+    ; Secondary loop. We do have to repeat 4 times (BGLOOPCNTR) because we have too much data to send with a single register
 
 	INC pointerBackgroundHighByte
 	INX
-	CPX #$04
+	CPX BGLOOPCNTR
 	BNE .BackgroundLoop
 	RTS								  ; RTS operation will mark the end of a method and return
 
@@ -87,7 +159,7 @@ LoadPalettes:
     ; Loading palette; 32 bytes of data
 	LDA PPUSTATUS					  ; Resets the PPU
 
-	LDA #$3F						  ; This is where the palette data is located on the PPU.
+	LDA PALETTELOC					  ; This is where the palette data is located on the PPU.
 	STA PPUADDR
 
 	LDA #$00						  ; And we perform this operation to fill out the 2 bytes required
@@ -99,7 +171,7 @@ LoadPalettes:
 	STA PPUDATA
 
 	INX
-	CPX #$20						  ; Keep doing this until #$20, or 32 decimal
+	CPX PALETTEBYT				      ; Keep doing this until #$20, or 32 decimal
 	BNE .PaletteLoop
 
 	RTS								  ; No need for inner loop because we are not in danger of overflowing.
@@ -108,10 +180,10 @@ LoadAttributes:
     ; Loading attributes; 64 bytes of data
 	LDA PPUSTATUS
 
-	LDA #$23						   ; Where attribute data is store in the PPU
+	LDA ATTRIBLOC1					  ; Where attribute data is store in the PPU
 	STA PPUADDR
 	
-	LDA #$C0						   ; PPU stores its attribute data at memory address $23C0
+	LDA ATTRIBLOC2					  ; PPU stores its attribute data at memory address $23C0
 	STA PPUADDR
 
 	LDX #$00
@@ -120,7 +192,7 @@ LoadAttributes:
 	STA PPUDATA
 
 	INX
-	CPX #$40							; Keep doing this until #$40, or 64 decimal
+	CPX ATTRIBUBYT			   		  ; Keep doing this until #$40, or 64 decimal
 	BNE .AttributeLoop
 	
 	RTS
@@ -128,14 +200,14 @@ LoadAttributes:
 LoadBubble:
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; The difference with sprite data is that we are not putting it in the PPU, but rather in RAM starting
-    ;; at address $0300
+    ;; at address $0300 (24 bytes of data)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     LDX #$00
 .BubbleLoop:
     LDA bubbleSprite,X
-    STA $0300,X
+    STA BUBBLELOC,X
     INX
-    CPX #$18
+    CPX BUBBLEBYTE
     BNE .BubbleLoop
     RTS
 
@@ -149,7 +221,7 @@ NMI:								  ; Game loop interrupt
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     LDA #$00                          ; We load the low byte of the CPU...
     STA OAMADDR                       ; ...into the PPU
-    LDA #$03                          ; We load the high byte of the CPU
+    LDA BUBBLELOC                     ; We load the high byte of the CPU
     STA OAMDMA                        ; ...into the OAM DMA high address
 
 	RTI

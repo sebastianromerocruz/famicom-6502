@@ -1,6 +1,6 @@
 bubbleSprite:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Our bubble player consists of 6 tiles (24 bytes). Below, each tyle consists of 4 bytes of data:
+	;; Our bubble player consists of 6 tiles (24 bytes). Below, each tile consists of 4 bytes of data:
 	;;	1. Vertical screen position (top left corner)
 	;;	2. Graphical tile (hex value of the tile in the sprite sheet)
 	;;	3. Attributes (%76543210):
