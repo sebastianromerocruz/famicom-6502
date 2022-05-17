@@ -137,6 +137,8 @@ I decided to make my character a spheroidal bubble that is, crucially, horizonta
 
 ![sprite](assets/sprites.png)
 
+<sub>**Figure 2**: Updated sprite sheet.</sub>
+
 The reason why this is relevant becomes clear in my [**sprite `asm` file**](assets/bubble-sprite.asm):
 
 ```asm
@@ -223,7 +225,7 @@ I basically was just copying and pasting Jonathan's palette colour codes (second
 
 ![palette-tool](assets/palette-tool.png)
 
-<sub>**Figure 2**: Information provided by our sprite tool.</sub>
+<sub>**Figure 3**: Information provided by our sprite tool.</sub>
 
 So now the background is of the colour palette that I originally intended, while I left the sprite with Jonathan's palette so that it would pop out a little against the background.
 
