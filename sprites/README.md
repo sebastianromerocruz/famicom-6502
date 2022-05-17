@@ -8,6 +8,11 @@ Learned something in this one that I thought would be so abstract and complicate
 
 ### Sections
 
+1. [**The ROM's "Init" Code**](#the-roms-"init"-code)
+2. [**Sprites**](#sprites)
+3. [**The NMI joins the battle**](#the-nmi-joins-the-battle)
+4. [**Stepping Back For A Bit: The General Structure of Our Code So Far**](#stepping-back-for-a-bit-the-general-structure-of-our-code-so-far)
+
 ### The ROM's "Init" Code
 
 According to the [**NesDev Wiki**](https://www.nesdev.org/wiki/Init_code) there are certain processes that an NES ROM must perform upon reset, and quite a few of those were missing from Jonathan's tutorial. His tutorial series is coming to an end soon, so I started to look for alternatives and found that most others included these additional boilerplate `RESET` instructions. As such, I will talk about those here before moving on to the sprite code:
