@@ -1,6 +1,6 @@
 # Famicom CPU Memory Map
 
-![nesmem](nesmem.jpg)
+![nesmem](images/nesmem.jpg)
 
 <sub>**Figure 1**: Famicom Memory Map.</sub>
 

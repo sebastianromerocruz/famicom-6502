@@ -2,7 +2,7 @@
 
 Learned something in this one that I thought would be so abstract and complicated, but was almost frustratingly simple.
 
-![Adding Sprites](assets/sprites-result.png)
+![Adding Sprites](assets/images/sprites-result.png)
 
 <sub>**Figure 1**: The result of this project.</sub>
 
@@ -135,7 +135,7 @@ One of the things that got me fascinated with NES programming was this awesome [
 
 I decided to make my character a spheroidal bubble that is, crucially, horizontally symmetrical:
 
-![sprite](assets/sprites.png)
+![sprite](assets/images/sprites.png)
 
 <sub>**Figure 2**: Updated sprite sheet.</sub>
 
@@ -223,7 +223,7 @@ One more thing that I did realise was that I was including the wrong palette lin
 
 I basically was just copying and pasting Jonathan's palette colour codes (second line) for both background and sprite data. I realised that the [**sprite tool**](https://eonarheim.github.io/NES-Sprite-Editor/) I am used gives me the relevant data that I need for this palette:
 
-![palette-tool](assets/palette-tool.png)
+![palette-tool](assets/images/palette-tool.png)
 
 <sub>**Figure 3**: Information provided by our sprite tool.</sub>
 

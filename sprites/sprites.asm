@@ -48,12 +48,15 @@ RESET:
 
 	LDX #APU_RESET	
 	STX CNTRLRTWO   ; disable APU frame IRQ
+	
 	LDX #STACK_INIT	
 	TXS             ; Set up stack
+
 	INX             ; now X = 0
 	STX PPUCTRL     ; disable NMI
 	STX PPUMASK     ; disable rendering
 	STX DELMODCTRL  ; disable DMC IRQs
+
 	JSR LoadBackground				  ; JSR operation will jump to that label, then return here once it is done
 	JSR LoadPalettes				  ; Same operation, but for the palettes
 	JSR LoadAttributes
@@ -84,8 +87,10 @@ MemClear:
 	STA $0500, x
 	STA $0600, x
 	STA $0700, x
+
 	LDA #$FE
 	STA $0300, x
+
 	INX
 	BNE MemClear
    
@@ -101,6 +106,7 @@ InfiniteLoop:
 
 LoadBackground:
 	LDA PPUSTATUS					  ; Resets the PPU
+
 	LDA #BG_PORT						
 	STA PPUADDR						  ; Port to the PPU to tell it where to store the background data
 	LDA #$00						  ; Because the memory addresses are 2 bytes and we can only send 1 byte at a time
@@ -146,6 +152,7 @@ LoadPalettes:
 	;; Loading palettes; 32 bytes of data
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	LDA PPUSTATUS					  ; Resets the PPU
+
 	LDA #PLTTE_PORT					  ; This is where the palette data is located on the PPU.
 	STA PPUADDR
 
@@ -167,6 +174,7 @@ LoadAttributes:
 	;; Loading attributes; 64 bytes of data
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	LDA PPUSTATUS
+
 	LDA #ATTR_APORT					   ; Where attribute data is store in the PPU
 	STA PPUADDR
 	
@@ -218,9 +226,8 @@ bubble:
 	.dw 0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 11. Sprite bank data (chr file)
+;; 10. Sprite bank data (chr file)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.bank 2
 	.org $0000
-    .incbin "graphics.chr"
-    
+    .incbin "assets/graphics.chr"
