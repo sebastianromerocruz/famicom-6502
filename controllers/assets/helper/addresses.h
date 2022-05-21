@@ -1,23 +1,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Author: Sebastián Romero Cruz
-;; Spring 2022
+;; Author: Sebastián Romero Cruz																				;;
+;; Spring 2022																									;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 	ORG $0000
-
 VARLOC ds 1			; Where in memory our variables will be located
 
 	ORG $C000
-
 CPUADR ds 1			; Where in the CPU’s address space bank 0 is located
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; PPU REGISTERS 
+;; PPU REGISTERS 																								;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 	ORG $2000
-
 PPUCTRL     ds 1	; PPU control register
 PPUMASK		ds 1	; PPU mask register. Controls the rendering of sprites and backgrounds, as well as colour effects.
 PPUSTATUS 	ds 1	; PPU status register. This register reflects the state of various functions inside the PPU. It is often used for determining timing.
@@ -28,10 +22,9 @@ PPUADDR		ds 1	; PPU address register. Because the CPU and the PPU are on separat
 PPUDATA		ds 1	; PPU data port. RAM read/write data register. After access, the video memory address will increment by an amount determined by bit 2 of $2000. 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; APU REGISTERS 
+;; APU REGISTERS 																								;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	ORG $4010
-
 DELMODCTRL	ds 1
 DELMODDA	ds 1
 DELMODADDR	ds 1
@@ -42,14 +35,11 @@ CNTRLRONE	ds 1
 CNTRLRTWO	ds 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; IRQ DISABLE ($E000-$FFFE, EVENS)
-;;	- Writing any value to this register will disable MMC3 interrupts AND acknowledge any pending interrupts. 
+;; IRQ DISABLE ($E000-$FFFE, EVENS)																				;;
+;;	- Writing any value to this register will disable MMC3 interrupts AND acknowledge any pending interrupts. 	;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 	ORG $E000
-
 IRQRD		ds 1
 
 	ORG $FFFA
-
 IRQRE		ds 1

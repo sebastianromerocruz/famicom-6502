@@ -12,33 +12,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 2. Helper and macros files
+;; 3. Constants
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    .include "assets/helper/nes.h"
+    .include "assets/helper/addresses.h"
+    .include "assets/helper/constants.h"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 3. Variables
+;; 4. Variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     .rsset VARLOC
 pointerBackgroundLowByte    .rs 1
 pointerBackgroundHighByte   .rs 1
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 4. Constants
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-APU_RESET   = $40
-STACK_INIT  = $FF
-NMI_ENABLE  = %10000000
-SPRT_ENBLE  = %00011110
-BG_PORT     = $20
-PLTTE_PORT  = $3F
-PLTTE_SIZE  = $20
-ATTR_APORT  = $23
-ATTR_BPORT  = $C0
-ATTRB_SIZE  = $40
-SPRITE_RAM  = $0300
-SPRITE_SIZE = $18
-SPRITE_LOW  = $00
-SPRITE_HI   = $03
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 5. Reset
@@ -225,17 +209,144 @@ LoadBubble:
     ;; And return
     RTS
 
+;; Read controller one input
+ReadPlayerOneControls:
+    ;; Twice for the instruction
+    LDA #CTRL_1_PORT
+    STA CNTRLRONE
+    LDA #$00
+    STA CNTRLRONE
+
+    ;; Buttons are read from the same register, but in a fixed order:
+    ;;  1. A
+    LDA CNTRLRONE
+    ;;  2. B
+    LDA CNTRLRONE
+    ;;  3. Select
+    LDA CNTRLRONE
+    ;;  4. Start
+    LDA CNTRLRONE
+
+    ;;  5. Up
+ReadUp:
+    LDA CNTRLRONE
+    AND #BINARY_ONE     ; Performing an AND operation with binary 1 will tell us if the button was pressed (1) or not (0)
+    BEQ EndReadUp       ; If we don’t use a CMP operation before BEQ, it will branch if the value is equal to zero.
+
+    ;; If the button was pressed:
+    ; Load the first tile of the first row of tiles
+    LDA BBLE_TL_Y_1
+    ; Set carry for possible subtraction
+    SEC
+    ; Move down by 1
+    SBC #$01
+    ; And store the result in the first row of tiles
+    STA BBLE_TL_Y_1
+    STA BBLE_TL_Y_2
+    STA BBLE_TL_Y_3
+
+    ; Load the first tile of the second row of tiles
+    LDA BBLE_TL_Y_4
+    ; And repeat...
+    SEC
+    SBC #$01
+    STA BBLE_TL_Y_4
+    STA BBLE_TL_Y_5
+    STA BBLE_TL_Y_6
+EndReadUp:
+
+    ;;  6. Down
+ReadDown:
+    LDA CNTRLRONE
+    AND #BINARY_ONE
+    BEQ EndReadDown
+
+    LDA BBLE_TL_Y_1
+    CLC
+    ADC #$01
+    STA BBLE_TL_Y_1
+    STA BBLE_TL_Y_2
+    STA BBLE_TL_Y_3
+
+    LDA BBLE_TL_Y_4
+    CLC
+    ADC #$01
+    STA BBLE_TL_Y_4
+    STA BBLE_TL_Y_5
+    STA BBLE_TL_Y_6
+EndReadDown:
+
+    ;;  7. Left
+ReadLeft:
+    ; Check for button press, otherwise end
+    LDA CNTRLRONE
+    AND #BINARY_ONE
+    BEQ EndReadLeft
+
+    ; If press:
+    ;   - First column of tiles
+    LDA BBLE_TL_X_1
+    SEC
+    SBC #$01
+    STA BBLE_TL_X_1
+    STA BBLE_TL_X_4
+
+    ;   - Second column of tiles
+    LDA BBLE_TL_X_2
+    SEC
+    SBC #$01
+    STA BBLE_TL_X_2
+    STA BBLE_TL_X_5
+
+    ;   - Third row of tiles
+    LDA BBLE_TL_X_3
+    SEC
+    SBC #$01
+    STA BBLE_TL_X_3
+    STA BBLE_TL_X_6
+EndReadLeft:
+
+    ;;  8. Right
+ReadRight:
+    ; Check for button right press, otherwise end
+    LDA CNTRLRONE
+    AND #BINARY_ONE
+    BEQ EndReadRight
+
+    LDA BBLE_TL_X_1
+    CLC
+    ADC #$01
+    STA BBLE_TL_X_1
+    STA BBLE_TL_X_4
+
+    LDA BBLE_TL_X_2
+    CLC
+    ADC #$01
+    STA BBLE_TL_X_2
+    STA BBLE_TL_X_5
+
+    LDA BBLE_TL_X_3
+    CLC
+    ADC #$01
+    STA BBLE_TL_X_3
+    STA BBLE_TL_X_6
+EndReadRight:
+
+    RTS
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 8. NMI; load our sprites
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 NMI:
     ;; Load and store the low sprite byte
     LDA #SPRITE_LOW
-    STA OAMADDR
+    STA NMI_LO_ADDR
 
     ;; Load and store the high sprite byte
     LDA #SPRITE_HI
-    STA SPRITEDMA
+    STA NMI_HI_ADDR
+
+    JSR ReadPlayerOneControls
 
     ;; And return from interrupt
     RTI
