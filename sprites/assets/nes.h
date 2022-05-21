@@ -27,9 +27,6 @@ PPUSCROLL	ds 1	; PPU scrolling position register. This register is used to to te
 PPUADDR		ds 1	; PPU address register. Because the CPU and the PPU are on separate buses, neither has direct access to the other's memory. The CPU writes to VRAM through a pair of registers on the PPU. First it loads an address into PPUADDR, and then it writes repeatedly to PPUDATA to fill VRAM. 
 PPUDATA		ds 1	; PPU data port. RAM read/write data register. After access, the video memory address will increment by an amount determined by bit 2 of $2000. 
 
-	ORG $4014
-
-OAMDMA		ds 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IRQ DISABLE ($E000-$FFFE, EVENS)
