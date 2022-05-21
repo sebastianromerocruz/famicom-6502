@@ -15,3 +15,4 @@ Some Famicom 6502 assembly projects because why not at this point. So far, based
 2. [**Background Sprites**](background-sprites/)
 3. [**Applying Color Palettes**](colour-palettes/)
 4. [**Adding Sprites**](sprites/)
+5. [**Reading Conroller Input (in progress)**](controllers/)
