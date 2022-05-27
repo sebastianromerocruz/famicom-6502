@@ -346,6 +346,7 @@ NMI:
     LDA #SPRITE_HI
     STA NMI_HI_ADDR
 
+    ;; Read player input
     JSR ReadPlayerOneControls
 
     ;; And return from interrupt
