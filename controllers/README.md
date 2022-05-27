@@ -8,7 +8,14 @@ I almost gave up on this whole NES development thing between the span of these l
 
 ### Sections
 
-_COMING SOON_
+1. [**On Constants and Giving Up**](#part-1-on-constants-and-giving-up)
+2. [**A Second `h` File**](#part-2-a-second-h-file)
+3. [**Controller Input**](#part-3-controller-input)
+    1. [**`ReadPlayerOneControls`**](#readplayeronecontrols)
+    2. [**`ReadUp`**](#readup)
+    3. [**`ReadDown`**](#readdown)
+    4. [**`ReadLeft` and `ReadRight`**](#readleft-and-readright)
+4. [**Next Steps**](#part-5-next-steps)
 
 ### Part 1: _On Constants and Giving Up_
 
