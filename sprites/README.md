@@ -1,4 +1,4 @@
-# [**Adding Sprites**](sprites.asm)
+# Adding Sprites ([**sprites.asm**](sprites.asm))
 
 Learned something in this one that I thought would be so abstract and complicated, but was almost frustratingly simple.
 

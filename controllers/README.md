@@ -1,4 +1,4 @@
-# [**Reading Controller Input**](controllers.asm)
+# Reading Controller Input ([**controllers.asm**](controllers.asm))
 
 I almost gave up on this whole NES development thing between the span of these last two projects. It probably did me some good though.
 
@@ -148,7 +148,16 @@ BBLE_TL_X_6 = $0317
 
 <sub>**Code Block 4**: The memory address fo each tile's X- and Y-coordinates; defined in my [**constants helper file**](assets/helper/constants.h).</sub>
 
-Notice that we start at memory location `$0300`, and recall that each sprite has 4 bytes of data, of which the first (e.g. `$0304` for tile 2) is its Y-coordinate and its fourth (`$0307`) is its X-coordinate.
+Notice that we start at memory location `$0300`, and recall that each sprite has [**4 bytes of data**](assets/banks/bubble.asm), of which the first (e.g. `$0304` for tile 2) is its Y-coordinate and its fourth (`$0307`) is its X-coordinate.
+
+```
+ |-- Sprite ----------------|
+ | Tile 1 | Tile 2 | Tile 3 |
+ |--------|--------|--------|
+ | Tile 4 | Tile 5 | Tile 6 |
+ |--------------------------|
+```
+<sub>**Figure 3**: A simple diagram of the "locations" of the tiles that make up our bubble sprite.</sub>
 
 ---
 
@@ -249,25 +258,16 @@ BINARY_ONE --> 00000001                | --> 00000001
 result     --> XXXXXXX0 (not pressed)  | --> XXXXXXX1 (pressed)
 ```
 
-<sub>**Figure 3**: The two potential results of a bitwise AND operation on `CNTRLRONE` and `BINARY_ONE`, where `X` represents in this case an irrelevant digit.</sub>
+<sub>**Figure 4**: The two potential results of a bitwise AND operation on `CNTRLRONE` and `BINARY_ONE`, where `X` represents in this case an irrelevant digit.</sub>
 
-As shown in figure 3, if we get a 1 for the right-most digit of our operation's result, the Up-button was indeed pressed. If we get a 0, on the other hand, we branch all the way down to `EndReadUp` (an empty subroutine) to end the Up-button's event handler via `BEQ EndReadUp`.
+As shown in figure 4, if we get a 1 for the right-most digit of our operation's result, the Up-button was indeed pressed. If we get a 0, on the other hand, we branch all the way down to `EndReadUp` (an empty subroutine) to end the Up-button's event handler via `BEQ EndReadUp`.
 
-So, what to do if the button _was_ pressed and we didn't branch out? Well, if we consider (as the NES does) going up to be a subtraction to the value of a point's Y-coordinate, then we need to do just this. We:
+So, what to do if the button _was_ pressed and we didn't branch out? Well, if we consider (as the NES does) "going up" to be a subtraction to the value of a point's Y-coordinate, then we need to do just this. We:
 
 1. Load the first tile's Y-coordinate into the accumulator (`LDA BBLE_TL_Y_1`).
-2. Subtract a 1 to it by setting the carry flag (`SEC`) and performing `SBC #$01`. The interesting thing here is that, since our bubble sprite has 3 horizontally parallel sets of three sprites, each set shares the same Y-coordinate. Thus, we...
+2. Subtract a 1 to it by setting the carry flag (`SEC`) and performing `SBC #$01`. The interesting thing here is that, since our bubble sprite has two horizontally parallel "sets" of three sprites (see figure 3), each set shares the same Y-coordinate. Thus, we...
 3. Store the result of this subtraction not only for the first title's Y-coordinate (`STA BBLE_TL_Y_1`), but also for the second (`STA BBLE_TL_Y_2`) and third (`STA BBLE_TL_Y_3`) titles', since they are also moving in this case.
 4. Repeat steps 1 through 3 for our second set of tiles, using `BBLE_TL_Y_4` to perform our subtraction.
-
-```
- |-- Sprite ----------------|
- | Tile 1 | Tile 2 | Tile 3 |
- |--------|--------|--------|
- | Tile 4 | Tile 5 | Tile 6 |
- |--------------------------|
-```
-<sub>**Figure 4**: A simple diagram of the "locations" of the tiles that make up our bubble sprite.</sub>
 
 
 #### **`ReadDown`**
@@ -305,7 +305,7 @@ I hope I can expect myself (or anybody else reading this) to understand this sub
 
 #### **`ReadLeft` and `ReadRight`**
 
-If `ReadDown` was a parallel to `ReadUp`, when `ReadLeft` (and, later, `ReadRight`) is its orthogonal complement. This is to say that the instructions are basically identical, but are performed on vertical sets of tiles as opposed to horizontal ones:
+If `ReadDown` was a parallel to `ReadUp`, then `ReadLeft` is its orthogonal complement. This is to say that the instructions are basically identical, but are performed on vertical sets of tiles as opposed to horizontal ones:
 
 ```asm
     ;;  7. Left
@@ -330,7 +330,7 @@ ReadLeft:
     STA BBLE_TL_X_2
     STA BBLE_TL_X_5
 
-    ;   - Third row of tiles
+    ;   - Third column of tiles
     LDA BBLE_TL_X_3
     SEC
     SBC #$01
@@ -393,7 +393,7 @@ WHILE the game is running:
     READ for user input
     
     IF the user quit the game during READ:
-        JUMP to the END LOOP
+        JUMP to END LOOP
 
     USE user input to generate next frame
     RENDER next frame
@@ -404,7 +404,7 @@ END LOOP
 END GAME
 ```
 
-The instruction "`USE user input to generate next frame`", not only includes rendering the sprites on screen, but also actually using the user's input (say, from a controller or a keyboard) to do something like move the sprites around.
+The instruction "`USE user input to generate next frame`", not only includes rendering the sprites on screen, but also actually _reading_ the user's input (say, from a controller or a keyboard) and _using_ it to do something like move the sprites around.
 
 We saw this during the sprites project, where we generated the bubble sprite during the non-maskable interrupt (`NMI`) section since this runs **every single frame**. If we're reading input from the user every single frame, it stands to reason that `ReadPlayerOneControls` should also be called during the `NMI` loop:
 
@@ -418,7 +418,7 @@ NMI:
     LDA #SPRITE_HI
     STA NMI_HI_ADDR
 
-    ;; Read player input
+    ;; Read (and use) player input
     JSR ReadPlayerOneControls
 
     ;; And return from interrupt

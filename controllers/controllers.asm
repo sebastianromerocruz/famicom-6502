@@ -298,7 +298,7 @@ ReadLeft:
     STA BBLE_TL_X_2
     STA BBLE_TL_X_5
 
-    ;   - Third row of tiles
+    ;   - Third column of tiles
     LDA BBLE_TL_X_3
     SEC
     SBC #$01
@@ -346,7 +346,7 @@ NMI:
     LDA #SPRITE_HI
     STA NMI_HI_ADDR
 
-    ;; Read player input
+    ;; Read (and use) player input
     JSR ReadPlayerOneControls
 
     ;; And return from interrupt

@@ -11,7 +11,7 @@ Some Famicom 6502 assembly projects because why not at this point. So far, based
 
 ## Projects
 
-1. [**Assembler Tutorial**](assembler-tutorial/)
+1. [**Getting Started with Famicom / NES Game Development**](assembler-tutorial/)
 2. [**Background Sprites**](background-sprites/)
 3. [**Applying Color Palettes**](colour-palettes/)
 4. [**Adding Sprites**](sprites/)

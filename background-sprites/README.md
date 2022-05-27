@@ -1,4 +1,4 @@
-# [**Graphics and Creating Backgrounds**](background_sprites.asm)
+# Graphics and Creating Backgrounds ([**background_sprites.asm**](background_sprites.asm))
 
 This took so long, and not for the reasons you might expect.
 

@@ -1,4 +1,4 @@
-# [**Applying Color Palettes**](background-palettes.asm)
+# Applying Color Palettes ([**background-palettes.asm**](background-palettes.asm))
 
 First proper bug in this project. It was was actually kind of fun to see something new like that.
 

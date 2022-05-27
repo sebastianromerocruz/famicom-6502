@@ -1,4 +1,4 @@
-# [**Getting Started with Famicom / NES Game Development: A Personal Chronicle**](nes-tutorial.asm)
+# Getting Started with Famicom / NES Game Development: A Personal Chronicle ([**nes-tutorial.asm**](nes-tutorial.asm))
 
 ### Sections
 
