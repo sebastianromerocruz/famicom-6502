@@ -16,4 +16,4 @@ Some Famicom 6502 assembly projects because why not at this point. So far, based
 3. [**Applying Color Palettes**](colour-palettes/)
 4. [**Adding Sprites**](sprites/)
 5. [**Reading Conroller Input**](controllers/)
-6. [**Simple Collisions (coming soon)**]()
+6. [**Simple Collisions (completed; `README` in progress)**](borders/)
